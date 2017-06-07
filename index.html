@@ -1,33 +1,59 @@
 <html>
 <head>
-<title>Chat Room</title>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<title>EX ROOM</title>
+<script type="text/javascript" src="https://cdn.bootcss.com/socket.io/1.4.8/socket.io.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="icon" type="image/png" href="icon.png">
+<style>
+	body {color: #228B22;background-color: linen;background-image: url(bgp.jpg);}h6 {color: red;}h5 {color: white;}.bold-font{font:bold;}
+</style>
 </head>
 <body>
+
 <script type="text/javascript">
 $(document).ready(function() {
-
-	var socket = io.connect('http://127.0.0.1:5000');
-
+	var nickname = prompt("INPUT YOUR NICKNAME:");
+	nickname = nickname.replace(/\s/g, '');
+	if (nickname) {
+	    msg = "<h3>welcome to 【EX CHAT ROOM】</h3><h6>Your nickname is " + nickname + ",but no one knows.<br>NOTICE:ONCE YOU SENDED ONE MESSAGE,THE CIENTS WHICH CONNECTTED TO THIS SERVER WILL RECEIVED IT ALL.</h6>"
+	    $("#messages").append(msg);
+	} else {
+	    alert("Sorry for empty value not allowed!");
+	    window.history.go(-1);
+	}
+	var socket = io.connect('http://127.0.0.1:9999');
 	socket.on('connect', function() {
-		socket.send('User has connected!');
+		socket.send('<h5>&nbsp;YOU ARE ONLINE STATUS</h5>');
 	});
-
 	socket.on('message', function(msg) {
-		$("#messages").append('<li>'+msg+'</li>');
-		console.log('Received message');
+			timeval = format_datetime(new Date());
+			$("#messages").append("[" + timeval + "] " + msg + "<br>");
+			console.log('Received message');	
 	});
-
 	$('#sendbutton').on('click', function() {
 		socket.send($('#myMessage').val());
 		$('#myMessage').val('');
 	});
-
+	function format_datetime(dtvalue){
+		var nHrs = dtvalue.getHours();
+		var nMin = dtvalue.getMinutes();
+		var nSec = dtvalue.getSeconds();
+		var nDate = dtvalue.getDate();
+		var nMnth = dtvalue.getMonth();
+		var nYear = dtvalue.getFullYear();
+		return nYear + "/" + nMnth + "/" + nDate + " " + nHrs + ":" + nMin + ":" + nSec;
+	}
+	$("#myMessage").focus();
 });
 </script>
-<ul id="messages"></ul>
-<input type="text" id="myMessage">
-<button id="sendbutton">Send</button>
+	<div class="container">
+		<div class=".col-md-12"><ul id="messages"></ul></div>
+		<div class=".col-md-12">
+			<textarea id="myMessage" class="form-control" rows="3" onkeypress="if(event.keyCode==13) {sendbutton.click();return false;}"> </textarea>
+			<button id="sendbutton" class="btn btn-info">Send</button>
+		</div>
+		<div class=".col-md-2"></div>
+	</div>
 </body>
 </html>
